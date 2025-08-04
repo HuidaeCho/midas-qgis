@@ -1,3 +1,6 @@
 #!/bin/sh
-rm -f midas.zip
-zip midas.zip * -x deploy.sh
+rm -rf midas midas.zip
+mkdir midas
+cp -a LICENSE *.* midas
+rm midas/deploy.sh
+zip -r midas.zip midas
