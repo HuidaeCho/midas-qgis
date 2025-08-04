@@ -6,7 +6,7 @@
 name=MIDAS
 qgisMinimumVersion=3.0
 description=Memory-Efficient I/O-Improved Drainage Analysis System
-version=0.1
+version=0.1.0
 author=Huidae Cho
 email=grass4u@gmail.com
 
