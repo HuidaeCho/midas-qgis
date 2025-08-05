@@ -4,8 +4,16 @@ The [MIDAS](https://github.com/HuidaeCho/midas) [QGIS](https://qgis.org/) plugin
 
 ## Related projects
 
-* [MIDAS](https://github.com/HuidaeCho/midas)
-* [MIDASFlow Python package](https://github.com/HuidaeCho/midasflow)
+* [MIDAS](https://github.com/HuidaeCho/midas): Core C library and executables (required for all Python, R, and QGIS interfaces)
+* [MIDASFlow](https://github.com/HuidaeCho/midasflow): Python package
+* [MIDASFlow-R](https://github.com/HuidaeCho/midasflow-r): R package
+
+## Installation
+
+```sh
+cd ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
+git clone https://github.com/HuidaeCho/midas-qgis.git
+```
 
 ## References
 
