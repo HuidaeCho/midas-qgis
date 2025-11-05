@@ -5,6 +5,9 @@ The [MIDAS QGIS plugin](https://plugins.qgis.org/plugins/midas/) offers memory-e
 ## Related projects
 
 * [MIDAS](https://github.com/HuidaeCho/midas): Core C library and executables (required for all Python, R, and QGIS interfaces)
+* [r.flowaccumulation](https://grass.osgeo.org/grass-stable/manuals/addons/r.flowaccumulation.html): [GRASS](https://grass.osgeo.org/) addon for [MEFA](https://github.com/HuidaeCho/mefa)
+* [r.hydrobasin](https://grass.osgeo.org/grass-stable/manuals/addons/r.hydrobasin.html): [GRASS](https://grass.osgeo.org/) addon for [MESHED](https://github.com/HuidaeCho/meshed)
+* [r.lfp](https://grass.osgeo.org/grass-stable/manuals/addons/r.lfp.html): [GRASS](https://grass.osgeo.org/) addon for [MELFP](https://github.com/HuidaeCho/melfp)
 * [MIDASFlow](https://github.com/HuidaeCho/midasflow): Python package
 * [MIDASFlow-R](https://github.com/HuidaeCho/midasflow-r): R package
 
