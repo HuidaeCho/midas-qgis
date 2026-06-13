@@ -177,7 +177,7 @@ class MEUFLAlgorithm(QgsProcessingAlgorithm):
         else:
             encoding = format_
 
-        cmd = ["meufl", dir_path, flen_path, "-e", encoding, "-t", nprocs]
+        cmd = ["meufl", dir_path, "-o", flen_path, "-e", encoding, "-t", nprocs]
 
         if compress_output:
             cmd.extend(["-z"])
