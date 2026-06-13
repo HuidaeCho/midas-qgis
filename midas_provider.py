@@ -36,6 +36,7 @@ from qgis.core import QgsProcessingProvider
 from .mefa_algorithm import MEFAAlgorithm
 from .meshed_algorithm import MESHEDAlgorithm
 from .melfp_algorithm import MELFPAlgorithm
+from .meufl_algorithm import MEUFLAlgorithm
 
 
 class MIDASProvider(QgsProcessingProvider):
