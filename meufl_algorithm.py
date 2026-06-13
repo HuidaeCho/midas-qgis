@@ -57,7 +57,7 @@ from PyQt5.QtCore import QMetaType
 from .utils import run_command_stream_output
 
 
-class MESHEDAlgorithm(QgsProcessingAlgorithm):
+class MEUFLAlgorithm(QgsProcessingAlgorithm):
     """
     This is an example algorithm that takes a vector layer and
     creates a new identical one.
@@ -78,11 +78,9 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
     dir_ = "dir"
     format_ = "format"
     encoding = "encoding"
-    outlets = "outlets"
-    idcol = "idcol"
-    wsheds = "wsheds"
+    flen = "flen"
+    from_one = "from_one"
     compress_output = "compress_output"
-    hier = "hier"
     nprocs = "nprocs"
 
     def initAlgorithm(self, config):
@@ -124,26 +122,17 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.outlets,
-                self.tr("Input outlet points vector"),
-                [QgsProcessing.TypeVectorPoint]
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterField(
-                self.idcol,
-                self.tr("Input field for outlet IDs"),
-                parentLayerParameterName=self.outlets
-            )
-        )
-
-        self.addParameter(
             QgsProcessingParameterFileDestination(
-                self.wsheds,
-                self.tr("Output watersheds GeoTIFF"),
+                self.flen,
+                self.tr("Upstream Flow Length GeoTIFF"),
                 "GeoTIFF files (*.tif)"
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterBoolean(
+                self.from_one,
+                self.tr("Count from 1")
             )
         )
 
@@ -151,16 +140,6 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
             QgsProcessingParameterBoolean(
                 self.compress_output,
                 self.tr("Compress output GeoTIFF")
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterFileDestination(
-                self.hier,
-                self.tr("Output subwatershed hierarchy CSV"),
-                "CSV files (*.csv)",
-                optional=True,
-                createByDefault=False
             )
         )
 
@@ -182,11 +161,8 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
         dir_rast = self.parameterAsRasterLayer(parameters, self.dir_, context)
         format_ = self.parameterAsString(parameters, self.format_, context)
         encoding = self.parameterAsString(parameters, self.encoding, context)
-        outlets_vect = self.parameterAsVectorLayer(parameters, self.outlets, context)
-        idcol = self.parameterAsString(parameters, self.idcol, context)
-        wsheds_path = self.parameterAsFileOutput(parameters, self.wsheds, context)
+        flen_path = self.parameterAsFileOutput(parameters, self.flen, context)
         compress_output = self.parameterAsBoolean(parameters, self.compress_output, context)
-        hier_path = self.parameterAsFileOutput(parameters, self.hier, context)
         nprocs = self.parameterAsString(parameters, self.nprocs, context)
 
         # XXX: not sure how QGIS passes a raster layer name in GeoPackage;
@@ -195,33 +171,16 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
         #dir_path = dir_rast.dataProvider().dataSourceUri()
         dir_path = dir_rast.source()
 
-        # QGIS passes a vector layer name in GeoPackage as
-        # file.gpkg|layername=name
-        # XXX: other special cases to handle? selected features?
-        #outlets_path = outlets_vect.dataProvider().dataSourceUri()
-        outlets_path = outlets_vect.source()
-        outlets_layer = None
-        if "|layername=" in outlets_path:
-            items = outlets_path.split("|layername=")
-            outlets_path = items[0]
-            outlets_layer = items[1]
-
         if format_ == "custom":
             if not encoding:
                 raise QgsProcessingException(f"Encoding not specified for custom format")
         else:
             encoding = format_
 
-        cmd = ["meshed", dir_path, outlets_path, idcol, wsheds_path, "-e", encoding, "-t", nprocs]
-
-        if outlets_layer:
-            cmd.extend(["-o", outlets_layer])
+        cmd = ["meufl", dir_path, flen_path, "-e", encoding, "-t", nprocs]
 
         if compress_output:
             cmd.extend(["-z"])
-
-        if hier_path:
-            cmd.extend(["-h", hier_path])
 
         QgsMessageLog.logMessage(str(cmd))
 
@@ -232,13 +191,13 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
 
         ret = {}
         project = context.project()
-        wsheds_rast = QgsRasterLayer(f"{wsheds_path}", "Watersheds", "gdal")
-        if not wsheds_rast.isValid():
-            feedback.reportError("Failed to load wsheds layer!")
-            ret[self.wsheds] = None
+        flen_rast = QgsRasterLayer(f"{flen_path}", "Upstream Flow Length", "gdal")
+        if not flen_rast.isValid():
+            feedback.reportError("Failed to load flen layer!")
+            ret[self.flen] = None
         else:
-            project.addMapLayer(wsheds_rast)
-            ret[self.wsheds] = wsheds_rast.source()
+            project.addMapLayer(flen_rast)
+            ret[self.flen] = flen_rast.source()
 
         QgsMessageLog.logMessage(str(ret))
 
@@ -252,7 +211,7 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
         lowercase alphanumeric characters only and no spaces or other
         formatting characters.
         """
-        return 'Delineate watersheds'
+        return 'Calculate upstream flow length'
 
     def displayName(self):
         """
@@ -282,4 +241,4 @@ class MESHEDAlgorithm(QgsProcessingAlgorithm):
         return QCoreApplication.translate('Processing', string)
 
     def createInstance(self):
-        return MESHEDAlgorithm()
+        return MEUFLAlgorithm()
